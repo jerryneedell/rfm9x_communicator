@@ -1,6 +1,6 @@
 from bbq10keyboard import BBQ10Keyboard, STATE_PRESS, STATE_RELEASE, STATE_LONG_PRESS
 from adafruit_ili9341 import ILI9341
-from adafruit_rfm import rfm9x
+import adafruit_rfm9x
 import digitalio
 import displayio
 import fourwire
@@ -204,7 +204,7 @@ LED = digitalio.DigitalInOut(board.D13)
 LED.direction = digitalio.Direction.OUTPUT
 
 # Initialze RFM radio
-rfm9x = rfm9x.RFM9x(board.SPI(), CS, RESET, RADIO_FREQ_MHZ)
+rfm9x = adafruit_rfm9x.RFM9x(board.SPI(), CS, RESET, RADIO_FREQ_MHZ)
 
 
 
@@ -214,7 +214,7 @@ rfm9x.tx_power = 23
 
 
 # set delay before sending ACK
-#rfm9x.ack_delay = 0.1
+rfm9x.ack_delay = 0.1
 if version2:
     # set node addresses
     rfm9x.node = 2
@@ -301,7 +301,7 @@ while True:
         message.selected = False  # When button is released
 
 
-    packet = rfm9x.receive_with_ack(with_header=True)
+    packet = rfm9x.receive(with_ack=True, with_header=True)
     # Optionally change the receive timeout from its default of 0.5 seconds:
     # packet = rfm9x.receive(timeout=5.0)
     # If no packet was received during the timeout then None is returned.

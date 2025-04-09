@@ -214,7 +214,7 @@ rfm9x.tx_power = 23
 
 
 # set delay before sending ACK
-#rfm9x.ack_delay = 0.1
+rfm9x.ack_delay = 0.1
 if version2:
     # set node addresses
     rfm9x.node = 2

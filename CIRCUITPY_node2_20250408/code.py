@@ -1,9 +1,8 @@
 from bbq10keyboard import BBQ10Keyboard, STATE_PRESS, STATE_RELEASE, STATE_LONG_PRESS
 from adafruit_ili9341 import ILI9341
-from adafruit_rfm import rfm9x
+import adafruit_rfm9x
 import digitalio
 import displayio
-import fourwire
 import time
 import board
 import neopixel
@@ -80,7 +79,7 @@ MESSAGE_LABEL_COLOR = 0x000000
 displayio.release_displays()
 
 
-disp_bus = fourwire.FourWire(
+disp_bus = displayio.FourWire(
     board.SPI(), command=board.D10, chip_select=board.D9, reset=None
 )
 
@@ -118,9 +117,8 @@ else:
 
 # Create the displayio group and show it
 splash = displayio.Group()
-#display.show(splash)
+display.show(splash)
 
-display.root_group = splash
 # Define the buttons
 button = Button(
     x=BUTTON_X,
@@ -204,7 +202,7 @@ LED = digitalio.DigitalInOut(board.D13)
 LED.direction = digitalio.Direction.OUTPUT
 
 # Initialze RFM radio
-rfm9x = rfm9x.RFM9x(board.SPI(), CS, RESET, RADIO_FREQ_MHZ)
+rfm9x = adafruit_rfm9x.RFM9x(board.SPI(), CS, RESET, RADIO_FREQ_MHZ)
 
 
 
@@ -214,7 +212,7 @@ rfm9x.tx_power = 23
 
 
 # set delay before sending ACK
-#rfm9x.ack_delay = 0.1
+rfm9x.ack_delay = 0.1
 if version2:
     # set node addresses
     rfm9x.node = 2
@@ -254,7 +252,7 @@ while True:
             transmit_string = apply_backspace(transmit_message.decode())
             wrap_text = "\n".join(wrap_text_to_lines(transmit_string, 40))
             xmit_message.label = wrap_text
-            #display.show(splash)            
+            display.show(splash)            
             if key == '\n':
                 counter += 1
                 print(key,end='')
@@ -263,7 +261,7 @@ while True:
                     print(" No Ack: ", counter, ack_failed_counter)
                 last_message.label = wrap_text
                 xmit_message.label = ""
-                #display.show(splash)            
+                display.show(splash)            
                 transmit_message = bytearray()
                 transmit_string = ""
     p = ts.touch_point
@@ -291,7 +289,7 @@ while True:
             transmit_message = bytearray()
             transmit_string = ""
         else:
-            #display.show(splash)
+            display.show(splash)
             button.selected = False  # When touch moves outside of button
             xmit_message.selected = False  # When touch moves outside of button
             message.selected = False  # When touch moves outside of button
@@ -301,7 +299,7 @@ while True:
         message.selected = False  # When button is released
 
 
-    packet = rfm9x.receive_with_ack(with_header=True)
+    packet = rfm9x.receive(with_ack=True, with_header=True)
     # Optionally change the receive timeout from its default of 0.5 seconds:
     # packet = rfm9x.receive(timeout=5.0)
     # If no packet was received during the timeout then None is returned.
@@ -320,5 +318,5 @@ while True:
         wrap_text = "\n".join(wrap_text_to_lines(packet_text, 40))
         message.label = wrap_text
         rssi.label = "RSSI: " + str(last_rssi)
-        #display.show(splash)
+        display.show(splash)
 
