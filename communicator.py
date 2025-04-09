@@ -316,7 +316,7 @@ while True:
         # sending side is sending ASCII data before you try to decode!
         packet_text = str(packet[4:], "ascii")
         last_rssi = rfm9x.last_rssi
-        print("From Node {0} [{1}dB]: {2}".format(packet[1],rssi,packet_text))
+        print("From Node {0} [{1}dB]: {2}".format(packet[1],last_rssi,packet_text))
         wrap_text = "\n".join(wrap_text_to_lines(packet_text, 40))
         message.label = wrap_text
         rssi.label = "RSSI: " + str(last_rssi)
